@@ -1,1 +1,1 @@
-# MESA-U-Hacks-2
+# MESA-U-Hacks-2.0
