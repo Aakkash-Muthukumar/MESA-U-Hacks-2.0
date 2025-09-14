@@ -10,6 +10,7 @@ import { AvatarSelector } from '@/components/AvatarSelector';
 import { SkillTree } from '@/components/SkillTree';
 import { FlashcardBuilder } from '@/components/FlashcardBuilder';
 import { CourseBuilder } from '@/components/CourseBuilder';
+import { Dashboard } from '@/components/Dashboard';
 import { KnowledgeKart } from '@/components/games/KnowledgeKart';
 import { STEMTower } from '@/components/games/STEMTower';
 import { DailyQuest } from '@/components/DailyQuest';
@@ -23,7 +24,7 @@ export const STEMTutorLayout: React.FC<STEMTutorLayoutProps> = ({ children }) =>
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
-  const [currentView, setCurrentView] = useState<'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems'>('chat');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems'>('dashboard');
   const { theme } = useTheme();
 
   return (
@@ -107,13 +108,9 @@ export const STEMTutorLayout: React.FC<STEMTutorLayoutProps> = ({ children }) =>
           className="flex-1 flex flex-col min-w-0"
           role="main"
         >
-          {/* Progress Panel */}
-          <div className="border-b border-border bg-card/30 backdrop-blur-sm">
-            <ProgressPanel />
-          </div>
-
           {/* Dynamic Content */}
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-auto">
+            {currentView === 'dashboard' && <Dashboard onNavigate={setCurrentView} />}
             {currentView === 'chat' && <ChatInterface />}
             {currentView === 'skill-tree' && <SkillTree />}
             {currentView === 'flashcards' && <FlashcardBuilder />}

@@ -4,7 +4,7 @@
   "description": "Offline STEM Learning Platform with AI Tutoring",
   "scripts": {
     "start": "./start.sh",
-    "install": "./install.sh",
+    "install": "npm run install:all",
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
     "dev:backend": "cd backend && npm start",
     "dev:frontend": "cd frontend && npm run dev",
@@ -19,7 +19,13 @@
     "test:backend": "curl -f http://localhost:3001/api/health || echo 'Backend not running'",
     "test:frontend": "curl -f http://localhost:5173 || echo 'Frontend not running'"
   },
-  "keywords": ["stem", "education", "offline", "learning", "ai-tutor"],
+  "keywords": [
+    "stem",
+    "education",
+    "offline",
+    "learning",
+    "ai-tutor"
+  ],
   "author": "STEM Tutor Team",
   "license": "MIT",
   "engines": {

@@ -1,10 +1,26 @@
 [
   {
-    "id": "bee76e67-7e1f-4d06-8edd-9f37a2bd7b0c",
-    "name": "sdfgsdf",
-    "icon": "BookOpen",
+    "id": "math-001",
+    "name": "Mathematics",
+    "icon": "Calculator",
+    "color": "bg-blue-500",
+    "created": "2025-09-14T06:30:00.000Z",
+    "flashcardCount": 2
+  },
+  {
+    "id": "physics-001",
+    "name": "Physics",
+    "icon": "Atom",
+    "color": "bg-purple-500",
+    "created": "2025-09-14T06:30:00.000Z",
+    "flashcardCount": 2
+  },
+  {
+    "id": "chemistry-001",
+    "name": "Chemistry",
+    "icon": "Flask",
     "color": "bg-green-500",
-    "created": "2025-09-14T06:06:53.383Z",
-    "flashcardCount": 0
+    "created": "2025-09-14T06:30:00.000Z",
+    "flashcardCount": 1
   }
 ]

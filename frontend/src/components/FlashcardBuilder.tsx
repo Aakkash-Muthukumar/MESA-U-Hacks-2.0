@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, Tag, BookOpen, Filter } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Tag, BookOpen, Filter, Play } from 'lucide-react';
+import { FlashcardStudy } from './FlashcardStudy';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,8 @@ export const FlashcardBuilder: React.FC = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showStudyMode, setShowStudyMode] = useState(false);
+  const [studyStartIndex, setStudyStartIndex] = useState(0);
 
   // Form state for creating/editing flashcards
   const [formData, setFormData] = useState({
@@ -266,6 +269,16 @@ export const FlashcardBuilder: React.FC = () => {
             </SelectContent>
           </Select>
 
+          <Button 
+            variant="outline" 
+            className="focus-ring" 
+            onClick={() => setShowStudyMode(true)}
+            disabled={filteredFlashcards.length === 0}
+          >
+            <Play className="h-4 w-4 mr-2" />
+            Study Cards
+          </Button>
+          
           <Button className="focus-ring" onClick={() => setShowCreateDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Create Card
@@ -331,7 +344,15 @@ export const FlashcardBuilder: React.FC = () => {
       {/* Flashcard Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredFlashcards.map(card => (
-          <Card key={card.id} className="hover:shadow-cosmic transition-all duration-300">
+          <Card 
+            key={card.id} 
+            className="hover:shadow-cosmic transition-all duration-300 cursor-pointer"
+            onClick={() => {
+              const cardIndex = filteredFlashcards.findIndex(c => c.id === card.id);
+              setStudyStartIndex(cardIndex);
+              setShowStudyMode(true);
+            }}
+          >
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between">
                 <div className="flex flex-wrap gap-1 mb-2">
@@ -342,11 +363,28 @@ export const FlashcardBuilder: React.FC = () => {
                     {card.difficulty}
                   </Badge>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    onClick={() => startEdit(card)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const cardIndex = filteredFlashcards.findIndex(c => c.id === card.id);
+                      setStudyStartIndex(cardIndex);
+                      setShowStudyMode(true);
+                    }}
+                    className="h-8 w-8 focus-ring text-primary hover:text-primary"
+                    aria-label="Study this flashcard"
+                  >
+                    <Play className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(card);
+                    }}
                     className="h-8 w-8 focus-ring"
                     aria-label="Edit flashcard"
                   >
@@ -355,7 +393,10 @@ export const FlashcardBuilder: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    onClick={() => handleDeleteCard(card.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteCard(card.id);
+                    }}
                     className="h-8 w-8 focus-ring text-destructive hover:text-destructive"
                     aria-label="Delete flashcard"
                   >
@@ -526,6 +567,20 @@ export const FlashcardBuilder: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Study Mode */}
+      {showStudyMode && (
+        <div className="fixed inset-0 bg-background z-50 overflow-auto">
+          <FlashcardStudy 
+            flashcards={filteredFlashcards}
+            startIndex={studyStartIndex}
+            onClose={() => {
+              setShowStudyMode(false);
+              setStudyStartIndex(0);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

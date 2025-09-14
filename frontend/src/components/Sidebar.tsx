@@ -9,7 +9,8 @@ import {
   CreditCard,
   Gamepad2,
   Target,
-  Zap
+  Zap,
+  Home
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,8 +29,8 @@ interface Subject {
 }
 
 interface SidebarProps {
-  currentView: 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems';
-  onViewChange: (view: 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems') => void;
+  currentView: 'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems';
+  onViewChange: (view: 'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems') => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
@@ -106,6 +107,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
           Learning Hub
         </h2>
         <div className="space-y-2">
+          <Button
+            variant={currentView === 'dashboard' ? "default" : "ghost"}
+            className="w-full justify-start gap-3 h-12 focus-ring"
+            onClick={() => onViewChange('dashboard')}
+          >
+            <Home className="h-4 w-4" />
+            Dashboard
+          </Button>
+          
           <Button
             variant={currentView === 'chat' ? "default" : "ghost"}
             className="w-full justify-start gap-3 h-12 focus-ring"

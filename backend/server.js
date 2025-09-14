@@ -53,13 +53,13 @@ app.get('/api/flashcards', async (req, res) => {
 
 app.post('/api/flashcards', async (req, res) => {
   const { question, answer, subject, difficulty, tags } = req.body;
-  
+
   if (!question || !answer || !subject) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   const flashcards = await readJSONFile(FLASHCARDS_FILE) || [];
-  
+
   const newFlashcard = {
     id: uuidv4(),
     question,
@@ -74,7 +74,7 @@ app.post('/api/flashcards', async (req, res) => {
   };
 
   flashcards.push(newFlashcard);
-  
+
   const success = await writeJSONFile(FLASHCARDS_FILE, flashcards);
   if (!success) {
     return res.status(500).json({ error: 'Failed to save flashcard' });
@@ -86,10 +86,10 @@ app.post('/api/flashcards', async (req, res) => {
 app.put('/api/flashcards/:id', async (req, res) => {
   const { id } = req.params;
   const { question, answer, subject, difficulty, tags } = req.body;
-  
+
   const flashcards = await readJSONFile(FLASHCARDS_FILE) || [];
   const cardIndex = flashcards.findIndex(card => card.id === id);
-  
+
   if (cardIndex === -1) {
     return res.status(404).json({ error: 'Flashcard not found' });
   }
@@ -114,10 +114,10 @@ app.put('/api/flashcards/:id', async (req, res) => {
 
 app.delete('/api/flashcards/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   const flashcards = await readJSONFile(FLASHCARDS_FILE) || [];
   const filteredFlashcards = flashcards.filter(card => card.id !== id);
-  
+
   if (filteredFlashcards.length === flashcards.length) {
     return res.status(404).json({ error: 'Flashcard not found' });
   }
@@ -134,10 +134,10 @@ app.delete('/api/flashcards/:id', async (req, res) => {
 app.post('/api/flashcards/:id/review', async (req, res) => {
   const { id } = req.params;
   const { correct } = req.body;
-  
+
   const flashcards = await readJSONFile(FLASHCARDS_FILE) || [];
   const cardIndex = flashcards.findIndex(card => card.id === id);
-  
+
   if (cardIndex === -1) {
     return res.status(404).json({ error: 'Flashcard not found' });
   }
@@ -167,13 +167,13 @@ app.get('/api/subjects', async (req, res) => {
 
 app.post('/api/subjects', async (req, res) => {
   const { name, icon, color } = req.body;
-  
+
   if (!name) {
     return res.status(400).json({ error: 'Subject name is required' });
   }
 
   const subjects = await readJSONFile(SUBJECTS_FILE) || [];
-  
+
   const newSubject = {
     id: uuidv4(),
     name,
@@ -184,7 +184,7 @@ app.post('/api/subjects', async (req, res) => {
   };
 
   subjects.push(newSubject);
-  
+
   const success = await writeJSONFile(SUBJECTS_FILE, subjects);
   if (!success) {
     return res.status(500).json({ error: 'Failed to save subject' });
@@ -204,7 +204,7 @@ app.get('/api/progress', async (req, res) => {
 
 app.put('/api/progress', async (req, res) => {
   const updates = req.body;
-  
+
   const currentProgress = await readJSONFile(PROGRESS_FILE) || {
     totalXP: 0,
     level: 1,
@@ -215,13 +215,166 @@ app.put('/api/progress', async (req, res) => {
   };
 
   const updatedProgress = { ...currentProgress, ...updates };
-  
+
   const success = await writeJSONFile(PROGRESS_FILE, updatedProgress);
   if (!success) {
     return res.status(500).json({ error: 'Failed to update progress' });
   }
 
   res.json(updatedProgress);
+});
+
+// Chat endpoints
+const CHATS_FILE = path.join(DATA_DIR, 'chats.json');
+
+// Helper function to read chats
+const readChats = async () => {
+  try {
+    const data = await fs.readFile(CHATS_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    // If file doesn't exist, return empty array
+    return [];
+  }
+};
+
+// Helper function to write chats
+const writeChats = async (chats) => {
+  try {
+    await fs.writeFile(CHATS_FILE, JSON.stringify(chats, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Error writing chats:', error);
+    return false;
+  }
+};
+
+// Get all chats
+app.get('/api/chats', async (req, res) => {
+  const chats = await readChats();
+  res.json(chats);
+});
+
+// Get specific chat by ID
+app.get('/api/chats/:id', async (req, res) => {
+  const { id } = req.params;
+  const chats = await readChats();
+  const chat = chats.find(c => c.id === id);
+
+  if (!chat) {
+    return res.status(404).json({ error: 'Chat not found' });
+  }
+
+  res.json(chat);
+});
+
+// Create new chat
+app.post('/api/chats', async (req, res) => {
+  const { id, name, messages } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: 'Chat ID is required' });
+  }
+
+  const chats = await readChats();
+
+  const newChat = {
+    id,
+    name: name || 'New Chat',
+    messages: messages || [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  chats.push(newChat);
+
+  const success = await writeChats(chats);
+  if (!success) {
+    return res.status(500).json({ error: 'Failed to save chat' });
+  }
+
+  res.status(201).json(newChat);
+});
+
+// Update chat
+app.put('/api/chats/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, messages } = req.body;
+
+  const chats = await readChats();
+  const chatIndex = chats.findIndex(c => c.id === id);
+
+  if (chatIndex === -1) {
+    return res.status(404).json({ error: 'Chat not found' });
+  }
+
+  chats[chatIndex] = {
+    ...chats[chatIndex],
+    name: name || chats[chatIndex].name,
+    messages: messages || chats[chatIndex].messages,
+    updatedAt: new Date().toISOString()
+  };
+
+  const success = await writeChats(chats);
+  if (!success) {
+    return res.status(500).json({ error: 'Failed to update chat' });
+  }
+
+  res.json(chats[chatIndex]);
+});
+
+// Delete chat
+app.delete('/api/chats/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const chats = await readChats();
+  const filteredChats = chats.filter(c => c.id !== id);
+
+  if (filteredChats.length === chats.length) {
+    return res.status(404).json({ error: 'Chat not found' });
+  }
+
+  const success = await writeChats(filteredChats);
+  if (!success) {
+    return res.status(500).json({ error: 'Failed to delete chat' });
+  }
+
+  res.json({ message: 'Chat deleted successfully' });
+});
+
+// Add message to chat
+app.post('/api/chats/:id/messages', async (req, res) => {
+  const { id } = req.params;
+  const message = req.body;
+
+  if (!message.content || !message.type) {
+    return res.status(400).json({ error: 'Message content and type are required' });
+  }
+
+  const chats = await readChats();
+  const chatIndex = chats.findIndex(c => c.id === id);
+
+  if (chatIndex === -1) {
+    return res.status(404).json({ error: 'Chat not found' });
+  }
+
+  const newMessage = {
+    id: message.id || uuidv4(),
+    type: message.type,
+    content: message.content,
+    timestamp: new Date().toISOString(),
+    ...message
+  };
+
+  chats[chatIndex].messages.push(newMessage);
+  chats[chatIndex].updatedAt = new Date().toISOString();
+
+  const success = await writeChats(chats);
+  if (!success) {
+    return res.status(500).json({ error: 'Failed to add message' });
+  }
+
+  res.status(201).json(newMessage);
 });
 
 // Health check
