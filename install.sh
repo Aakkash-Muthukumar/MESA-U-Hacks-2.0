@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# STEM Tutor Installation Script
-echo "📦 Installing STEM Tutor..."
+echo "🔧 Installing STEM Tutor Dependencies..."
 
 # Function to check command exists
 command_exists() {
@@ -46,6 +45,15 @@ fi
 
 echo "✅ npm $(npm -v) detected"
 
+# Check if Python is installed
+if ! command_exists python3; then
+    echo "❌ Python 3 is not installed."
+    echo "Please install Python 3 from https://python.org/"
+    exit 1
+fi
+
+echo "✅ Python $(python3 --version) detected"
+
 # Set npm configuration for better reliability
 echo "🔧 Configuring npm for optimal installation..."
 npm config set fund false
@@ -84,6 +92,13 @@ else
     echo "4. Check if you're behind a corporate firewall"
     exit 1
 fi
+
+cd ..
+
+# Install Python dependencies
+echo ""
+echo "🐍 Installing Python dependencies..."
+pip3 install fastapi uvicorn pydantic httpx python-multipart
 
 cd ..
 

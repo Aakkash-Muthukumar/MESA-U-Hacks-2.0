@@ -49,6 +49,19 @@ class PracticeGenerateRequest(BaseModel):
     subject: Optional[str] = "General"
     count: Optional[int] = 3
 
+class CourseGenerateRequest(BaseModel):
+    topic: str
+    subject: Optional[str] = "General"
+    difficulty: Optional[str] = "beginner"
+    lessons_count: Optional[int] = 4
+
+class LessonGenerateRequest(BaseModel):
+    lesson_title: str
+    course_topic: str
+    subject: Optional[str] = "General"
+    difficulty: Optional[str] = "beginner"
+    lesson_number: Optional[int] = 1
+
 class HealthResponse(BaseModel):
     status: str
     message: str
@@ -178,6 +191,35 @@ async def ollama_status():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/python/course/generate")
+async def generate_course(request: CourseGenerateRequest):
+    """Generate a complete course structure"""
+    try:
+        course_data = ollama_service.generate_course_structure(
+            request.topic, request.subject, request.difficulty, request.lessons_count
+        )
+        return {
+            "course": course_data,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/python/lesson/generate")
+async def generate_lesson_content(request: LessonGenerateRequest):
+    """Generate detailed content for a specific lesson"""
+    try:
+        lesson_content = ollama_service.generate_lesson_content(
+            request.lesson_title, request.course_topic, request.subject, 
+            request.difficulty, request.lesson_number
+        )
+        return {
+            "content": lesson_content,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/python/test")
 async def test_endpoint():
     """Test endpoint for debugging"""
@@ -207,8 +249,8 @@ if __name__ == "__main__":
         print("❌ Ollama is not connected")
         print("Please make sure Ollama is running: ollama serve")
     
-    print(f"\nStarting FastAPI server on http://localhost:3002")
-    print(f"API Documentation: http://localhost:3002/docs")
+    print(f"\nStarting FastAPI server on http://localhost:8000")
+    print(f"API Documentation: http://localhost:8000/docs")
     print(f"Using model: {ollama_service.MODEL}")
     
-    uvicorn.run(app, host="0.0.0.0", port=3002)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

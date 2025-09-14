@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Plus,
   Clock,
   Trophy,
   BookOpen,
@@ -13,20 +12,7 @@ import {
   Home
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-
-interface Subject {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  flashcardCount: number;
-  created: string;
-}
 
 interface SidebarProps {
   currentView: 'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems';
@@ -34,68 +20,18 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [selectedSubject, setSelectedSubject] = useState<string>('');
-  const [showCreateSubject, setShowCreateSubject] = useState(false);
-  const [newSubjectName, setNewSubjectName] = useState('');
   const [recentTopics, setRecentTopics] = useState<string[]>([]);
 
-  // Load subjects from backend
+  // Load recent topics
   useEffect(() => {
-    fetchSubjects();
     loadRecentTopics();
   }, []);
-
-  const fetchSubjects = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/api/subjects');
-      if (response.ok) {
-        const data = await response.json();
-        setSubjects(data);
-        if (data.length > 0 && !selectedSubject) {
-          setSelectedSubject(data[0].id);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch subjects:', error);
-    }
-  };
 
   const loadRecentTopics = () => {
     // Load from localStorage for now - could be moved to backend later
     const stored = localStorage.getItem('recentTopics');
     if (stored) {
       setRecentTopics(JSON.parse(stored));
-    }
-  };
-
-  const createSubject = async () => {
-    if (!newSubjectName.trim()) return;
-
-    try {
-      const response = await fetch('http://localhost:3001/api/subjects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: newSubjectName,
-          icon: 'BookOpen',
-          color: `bg-${['blue', 'green', 'purple', 'orange', 'red', 'emerald'][Math.floor(Math.random() * 6)]}-500`
-        }),
-      });
-
-      if (response.ok) {
-        const newSubject = await response.json();
-        setSubjects(prev => [...prev, newSubject]);
-        setNewSubjectName('');
-        setShowCreateSubject(false);
-        if (!selectedSubject) {
-          setSelectedSubject(newSubject.id);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to create subject:', error);
     }
   };
 
@@ -181,87 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
         </div>
       </section>
 
-      <Separator />
 
-      {/* Dynamic Subjects */}
-      <section aria-labelledby="subjects-heading">
-        <div className="flex items-center justify-between mb-4">
-          <h2 id="subjects-heading" className="text-lg font-semibold text-foreground">
-            My Subjects
-          </h2>
-          <Dialog open={showCreateSubject} onOpenChange={setShowCreateSubject}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 focus-ring">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Subject</DialogTitle>
-                <DialogDescription>
-                  Add a new subject to organize your learning materials.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="subject-name">Subject Name</Label>
-                  <Input
-                    id="subject-name"
-                    placeholder="e.g., Mathematics, Physics, Programming"
-                    value={newSubjectName}
-                    onChange={(e) => setNewSubjectName(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && createSubject()}
-                  />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setShowCreateSubject(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={createSubject} disabled={!newSubjectName.trim()}>
-                    Create Subject
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-        
-        {subjects.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-sm">No subjects yet.</p>
-            <p className="text-xs">Create your first subject to get started!</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {subjects.map((subject) => {
-              const isSelected = selectedSubject === subject.id;
-              
-              return (
-                <Button
-                  key={subject.id}
-                  variant={isSelected ? "default" : "ghost"}
-                  className={`w-full justify-start gap-3 h-12 focus-ring ${
-                    isSelected 
-                      ? 'bg-primary text-primary-foreground shadow-cosmic' 
-                      : 'hover:bg-secondary/80'
-                  }`}
-                  onClick={() => setSelectedSubject(subject.id)}
-                  aria-pressed={isSelected}
-                >
-                  <div className={`w-8 h-8 rounded-lg ${subject.color} flex items-center justify-center`}>
-                    <BookOpen className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="flex-1 text-left">{subject.name}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {subject.flashcardCount}
-                  </Badge>
-                </Button>
-              );
-            })}
-          </div>
-        )}
-      </section>
 
       {recentTopics.length > 0 && (
         <>

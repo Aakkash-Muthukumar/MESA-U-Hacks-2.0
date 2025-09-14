@@ -44,8 +44,42 @@ export const CourseBuilder: React.FC = () => {
     const stored = localStorage.getItem('courses');
     if (stored) {
       setCourses(JSON.parse(stored));
+    } else {
+      // Load sample courses if no courses exist
+      loadSampleCourses();
     }
   }, []);
+
+  const loadSampleCourses = async () => {
+    try {
+      console.log('Fetching sample courses...');
+      const response = await fetch('/sample-courses.json');
+      console.log('Response status:', response.status);
+      if (response.ok) {
+        const sampleCourses = await response.json();
+        console.log('Raw sample courses:', sampleCourses);
+        console.log('First course modules:', sampleCourses[0]?.modules);
+        console.log('Modules length:', sampleCourses[0]?.modules?.length);
+        
+        // Convert date strings to Date objects
+        const processedCourses = sampleCourses.map((course: any) => ({
+          ...course,
+          created: new Date(course.created),
+          lastAccessed: course.lastAccessed ? new Date(course.lastAccessed) : undefined
+        }));
+        
+        console.log('Processed courses:', processedCourses);
+        console.log('Setting courses state...');
+        setCourses(processedCourses);
+        localStorage.setItem('courses', JSON.stringify(processedCourses));
+        console.log('Courses set successfully');
+      } else {
+        console.error('Failed to fetch sample courses, status:', response.status);
+      }
+    } catch (error) {
+      console.error('Failed to load sample courses:', error);
+    }
+  };
 
   // Save courses to localStorage whenever courses change
   useEffect(() => {
@@ -55,6 +89,7 @@ export const CourseBuilder: React.FC = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [viewingModule, setViewingModule] = useState<CourseModule | null>(null);
 
   // Form state for creating/editing courses
   const [formData, setFormData] = useState({
@@ -65,7 +100,7 @@ export const CourseBuilder: React.FC = () => {
     tags: ''
   });
 
-  const subjects = ['math', 'physics', 'chemistry', 'biology', 'coding', 'engineering'];
+  const subjects = ['math', 'physics', 'chemistry', 'biology', 'coding', 'engineering', 'religion'];
   const difficulties = ['beginner', 'intermediate', 'advanced'];
   const moduleTypes = [
     { value: 'lesson', label: 'Lesson', icon: BookOpen },
@@ -157,7 +192,8 @@ export const CourseBuilder: React.FC = () => {
       chemistry: 'bg-green-100 text-green-800',
       biology: 'bg-emerald-100 text-emerald-800',
       coding: 'bg-purple-100 text-purple-800',
-      engineering: 'bg-orange-100 text-orange-800'
+      engineering: 'bg-orange-100 text-orange-800',
+      religion: 'bg-indigo-100 text-indigo-800'
     };
     return colors[subject as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
@@ -176,7 +212,133 @@ export const CourseBuilder: React.FC = () => {
     return `${mins}m`;
   };
 
+  // Module Content Viewer
+  if (viewingModule && (viewingModule as any).content) {
+    const content = (viewingModule as any).content;
+    
+    return (
+      <div className="p-6 max-w-4xl mx-auto">
+        <div className="mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => setViewingModule(null)}
+            className="mb-4 focus-ring"
+          >
+            ← Back to Course
+          </Button>
+          
+          <h1 className="text-3xl font-bold mb-2">{viewingModule.title}</h1>
+          <p className="text-muted-foreground mb-4">{viewingModule.description}</p>
+          
+          <div className="flex gap-2 mb-6">
+            <Badge variant="outline" className="capitalize">{viewingModule.type}</Badge>
+            <Badge variant="outline">{formatTime(viewingModule.estimatedTime)}</Badge>
+          </div>
+        </div>
+
+        {/* Learning Objectives */}
+        {content.objectives && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Learning Objectives</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc list-inside space-y-1">
+                {content.objectives.map((objective: string, index: number) => (
+                  <li key={index} className="text-sm">{objective}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Introduction */}
+        {content.introduction && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Introduction</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed">{content.introduction}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Content Sections */}
+        {content.sections && content.sections.map((section: any, index: number) => (
+          <Card key={index} className="mb-6">
+            <CardHeader>
+              <CardTitle>{section.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div 
+                className="prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ 
+                  __html: section.content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/### (.*?)(\n|$)/g, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>').replace(/#### (.*?)(\n|$)/g, '<h4 class="text-base font-medium mt-3 mb-1">$1</h4>').replace(/- (.*?)(\n|$)/g, '<li class="ml-4">$1</li>') 
+                }}
+              />
+            </CardContent>
+          </Card>
+        ))}
+
+        {/* Summary */}
+        {content.summary && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed">{content.summary}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Practice Exercises */}
+        {content.exercises && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Practice Exercises</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {content.exercises.map((exercise: any, index: number) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <h4 className="font-medium mb-2">Question {index + 1}:</h4>
+                    <p className="text-sm mb-2">{exercise.question}</p>
+                    <details className="text-sm">
+                      <summary className="cursor-pointer text-primary hover:underline">Show Answer</summary>
+                      <div className="mt-2 p-2 bg-muted rounded">
+                        <p className="font-medium">Answer: {exercise.answer}</p>
+                        <p className="text-muted-foreground mt-1">{exercise.explanation}</p>
+                      </div>
+                    </details>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Next Preview */}
+        {content.nextPreview && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Coming Next</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed">{content.nextPreview}</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  }
+
   if (selectedCourse) {
+    console.log('Rendering selected course:', selectedCourse);
+    console.log('Selected course modules:', selectedCourse.modules);
+    console.log('Modules count:', selectedCourse.modules?.length);
+    
     return (
       <div className="p-6 max-w-6xl mx-auto">
         <div className="mb-6">
@@ -224,8 +386,12 @@ export const CourseBuilder: React.FC = () => {
               <div className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
                 <div>
-                  <div className="text-2xl font-bold">{selectedCourse.modules.length}</div>
-                  <div className="text-sm text-muted-foreground">Modules</div>
+                  <div className="text-2xl font-bold">
+                    {selectedCourse.modules ? selectedCourse.modules.length : 'N/A'}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Modules {selectedCourse.modules ? '' : '(undefined)'}
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -236,7 +402,10 @@ export const CourseBuilder: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-accent" />
                 <div>
-                  <div className="text-2xl font-bold">{formatTime(selectedCourse.totalTime)}</div>
+                  <div className="text-2xl font-bold">
+                    {selectedCourse.totalTime ? formatTime(selectedCourse.totalTime) : 
+                     selectedCourse.modules ? formatTime(selectedCourse.modules.reduce((acc, m) => acc + (m.estimatedTime || 0), 0)) : '0m'}
+                  </div>
                   <div className="text-sm text-muted-foreground">Total Time</div>
                 </div>
               </div>
@@ -249,7 +418,7 @@ export const CourseBuilder: React.FC = () => {
                 <Star className="h-5 w-5 text-success" />
                 <div>
                   <div className="text-2xl font-bold">
-                    {selectedCourse.modules.filter(m => m.completed).length}
+                    {selectedCourse.modules ? selectedCourse.modules.filter(m => m.completed).length : 0}
                   </div>
                   <div className="text-sm text-muted-foreground">Completed</div>
                 </div>
@@ -274,13 +443,26 @@ export const CourseBuilder: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Course Modules</h2>
-            <Button className="focus-ring">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Module
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  localStorage.removeItem('courses');
+                  setCourses([]);
+                  loadSampleCourses();
+                }} 
+                className="focus-ring"
+              >
+                Load Sample Courses
+              </Button>
+              <Button className="focus-ring">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Module
+              </Button>
+            </div>
           </div>
 
-          {selectedCourse.modules.map((module, index) => {
+          {selectedCourse.modules && selectedCourse.modules.length > 0 ? selectedCourse.modules.map((module, index) => {
             const Icon = getModuleTypeIcon(module.type);
             
             return (
@@ -316,19 +498,50 @@ export const CourseBuilder: React.FC = () => {
                       <span className="text-sm text-muted-foreground">
                         {formatTime(module.estimatedTime)}
                       </span>
-                      <Button 
-                        variant={module.completed ? "secondary" : "default"}
-                        size="sm"
-                        className="focus-ring"
-                      >
-                        {module.completed ? 'Review' : 'Start'}
-                      </Button>
+                      <div className="flex gap-2">
+                        {(module as any).content && (
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            className="focus-ring"
+                            onClick={() => setViewingModule(module)}
+                          >
+                            View Content
+                          </Button>
+                        )}
+                        <Button 
+                          variant={module.completed ? "secondary" : "default"}
+                          size="sm"
+                          className="focus-ring"
+                        >
+                          {module.completed ? 'Review' : 'Start'}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
               </Card>
             );
-          })}
+          }) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No modules found in this course.</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Modules: {selectedCourse.modules ? selectedCourse.modules.length : 'undefined'}
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  console.log('Debug - Selected course:', selectedCourse);
+                  localStorage.removeItem('courses');
+                  setCourses([]);
+                  loadSampleCourses();
+                }} 
+                className="mt-4"
+              >
+                Debug: Reload Sample Courses
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -351,10 +564,23 @@ export const CourseBuilder: React.FC = () => {
           </span>
         </div>
         
-        <Button className="focus-ring" onClick={() => setShowCreateDialog(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Course
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              localStorage.removeItem('courses');
+              setCourses([]);
+              loadSampleCourses();
+            }} 
+            className="focus-ring"
+          >
+            Load Sample Courses
+          </Button>
+          <Button className="focus-ring" onClick={() => setShowCreateDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Course
+          </Button>
+        </div>
       </div>
 
       {/* Course Grid */}

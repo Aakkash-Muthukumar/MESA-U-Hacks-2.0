@@ -212,6 +212,112 @@ def generate_practice_problems(topic: str, subject: str, count: int = 3) -> str:
     
     return ask_gemma_simple(prompt)
 
+def generate_course_structure(topic: str, subject: str = "General", difficulty: str = "beginner", lessons_count: int = 4) -> dict:
+    """
+    Generate a complete course structure with lessons
+    """
+    prompt = f"""
+    Create a structured {difficulty}-level course on "{topic}" in {subject} with {lessons_count} lessons.
+    
+    Return a JSON structure with:
+    {{
+        "title": "Course Title",
+        "description": "Brief course description",
+        "lessons": [
+            {{
+                "id": 1,
+                "title": "Lesson Title",
+                "description": "Lesson description",
+                "duration": "estimated minutes",
+                "objectives": ["objective1", "objective2"]
+            }}
+        ]
+    }}
+    
+    Make lessons progressive, building on each other.
+    Focus on practical, hands-on learning.
+    """
+    
+    response = ask_gemma_simple(prompt)
+    
+    # Try to extract JSON from response
+    try:
+        import re
+        json_match = re.search(r'\{.*\}', response, re.DOTALL)
+        if json_match:
+            import json
+            return json.loads(json_match.group())
+    except:
+        pass
+    
+    # Fallback: return structured data
+    return {
+        "title": f"{topic} Course",
+        "description": f"A comprehensive {difficulty}-level course on {topic}",
+        "lessons": [
+            {
+                "id": i+1,
+                "title": f"Lesson {i+1}: Introduction to {topic}" if i == 0 else f"Lesson {i+1}: Advanced {topic}",
+                "description": f"Learn the fundamentals of {topic}",
+                "duration": "30-45 minutes",
+                "objectives": [f"Understand {topic} basics", f"Apply {topic} concepts"]
+            }
+            for i in range(lessons_count)
+        ]
+    }
+
+def generate_lesson_content(lesson_title: str, course_topic: str, subject: str = "General", difficulty: str = "beginner", lesson_number: int = 1) -> str:
+    """
+    Generate detailed content for a specific lesson
+    """
+    prompt = f"""
+    Create comprehensive lesson content for:
+    
+    **Course:** {course_topic} ({subject})
+    **Lesson {lesson_number}:** {lesson_title}
+    **Level:** {difficulty}
+    
+    Structure the lesson with these sections:
+    
+    ## Learning Objectives
+    - Clear, measurable objectives
+    
+    ## Introduction
+    - Hook to engage students
+    - Connection to previous lessons
+    
+    ## Core Content
+    ### Part 1: Fundamentals (25%)
+    - Basic concepts and definitions
+    - Simple examples
+    
+    ### Part 2: Building Understanding (50%)
+    - Detailed explanations
+    - Step-by-step examples
+    - Common misconceptions
+    
+    ### Part 3: Application (75%)
+    - Practice problems
+    - Real-world applications
+    
+    ### Part 4: Mastery (100%)
+    - Advanced concepts
+    - Challenge problems
+    - Synthesis with other topics
+    
+    ## Summary
+    - Key takeaways
+    - Preview of next lesson
+    
+    ## Practice Exercises
+    - 3-5 problems with solutions
+    
+    Use proper markdown formatting, include examples, and make it engaging for {difficulty} level students.
+    Keep each part focused and build progressively.
+    """
+    
+    return ask_gemma_simple(prompt)
+
 def check_model_availability(model: str = MODEL) -> bool:
     """
     Check if a specific model is available locally
