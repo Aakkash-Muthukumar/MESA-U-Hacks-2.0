@@ -39,16 +39,56 @@ interface Course {
 export const CourseBuilder: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
 
-  // Load courses from localStorage on component mount
+  // Load courses from backend on component mount
   useEffect(() => {
-    const stored = localStorage.getItem('courses');
-    if (stored) {
-      setCourses(JSON.parse(stored));
-    } else {
-      // Load sample courses if no courses exist
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    console.log('🔍 Starting fetchCourses...');
+    try {
+      console.log('📡 Making API call to http://localhost:3001/api/courses');
+      const response = await fetch('http://localhost:3001/api/courses');
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+      
+      if (response.ok) {
+        const coursesData = await response.json();
+        console.log('✅ Fetched courses from backend:', coursesData);
+        console.log('📊 Number of courses:', coursesData.length);
+        
+        if (coursesData.length > 0) {
+          console.log('📚 First course:', coursesData[0]);
+          console.log('📚 First course modules:', coursesData[0].modules);
+          console.log('📚 Modules count:', coursesData[0].modules?.length);
+        }
+        
+        // Convert date strings to Date objects
+        const processedCourses = coursesData.map((course: any) => ({
+          ...course,
+          created: new Date(course.created),
+          lastAccessed: course.lastAccessed ? new Date(course.lastAccessed) : undefined
+        }));
+        
+        console.log('🔄 Processed courses:', processedCourses);
+        console.log('🔄 Setting courses state...');
+        setCourses(processedCourses);
+        console.log('✅ Courses state set successfully');
+        
+        // Sample courses are now premade in backend, no need to auto-load
+      } else {
+        console.error('❌ Failed to fetch courses:', response.status);
+        const errorText = await response.text();
+        console.error('❌ Error response:', errorText);
+        // Fallback to sample courses if backend fails
+        loadSampleCourses();
+      }
+    } catch (error) {
+      console.error('💥 Error fetching courses:', error);
+      // Fallback to sample courses if backend fails
       loadSampleCourses();
     }
-  }, []);
+  };
 
   const loadSampleCourses = async () => {
     try {
@@ -61,18 +101,14 @@ export const CourseBuilder: React.FC = () => {
         console.log('First course modules:', sampleCourses[0]?.modules);
         console.log('Modules length:', sampleCourses[0]?.modules?.length);
         
-        // Convert date strings to Date objects
-        const processedCourses = sampleCourses.map((course: any) => ({
-          ...course,
-          created: new Date(course.created),
-          lastAccessed: course.lastAccessed ? new Date(course.lastAccessed) : undefined
-        }));
+        // Save each sample course to backend
+        for (const course of sampleCourses) {
+          await saveCourseToBackend(course);
+        }
         
-        console.log('Processed courses:', processedCourses);
-        console.log('Setting courses state...');
-        setCourses(processedCourses);
-        localStorage.setItem('courses', JSON.stringify(processedCourses));
-        console.log('Courses set successfully');
+        // Refresh courses from backend
+        await fetchCourses();
+        console.log('Sample courses loaded successfully');
       } else {
         console.error('Failed to fetch sample courses, status:', response.status);
       }
@@ -81,10 +117,25 @@ export const CourseBuilder: React.FC = () => {
     }
   };
 
-  // Save courses to localStorage whenever courses change
-  useEffect(() => {
-    localStorage.setItem('courses', JSON.stringify(courses));
-  }, [courses]);
+  const saveCourseToBackend = async (courseData: any) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(courseData),
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to save course to backend:', response.status);
+      }
+    } catch (error) {
+      console.error('Error saving course to backend:', error);
+    }
+  };
+
+  // No longer need to save to localStorage - using backend API
 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
@@ -109,51 +160,95 @@ export const CourseBuilder: React.FC = () => {
     { value: 'game', label: 'Game', icon: Play }
   ];
 
-  const handleCreateCourse = () => {
-    const newCourse: Course = {
-      id: Date.now().toString(),
+  const handleCreateCourse = async () => {
+    const newCourseData = {
       title: formData.title,
       description: formData.description,
       subject: formData.subject,
       difficulty: formData.difficulty,
       modules: [],
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-      created: new Date(),
       progress: 0,
       isShared: false,
       author: 'You',
       totalTime: 0
     };
 
-    setCourses(prev => [...prev, newCourse]);
-    setFormData({ title: '', description: '', subject: 'math', difficulty: 'beginner', tags: '' });
-    setShowCreateDialog(false);
+    try {
+      const response = await fetch('http://localhost:3001/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCourseData),
+      });
+
+      if (response.ok) {
+        const newCourse = await response.json();
+        setCourses(prev => [...prev, { ...newCourse, created: new Date(newCourse.created) }]);
+        setFormData({ title: '', description: '', subject: 'math', difficulty: 'beginner', tags: '' });
+        setShowCreateDialog(false);
+      } else {
+        console.error('Failed to create course:', response.status);
+      }
+    } catch (error) {
+      console.error('Error creating course:', error);
+    }
   };
 
-  const handleEditCourse = () => {
+  const handleEditCourse = async () => {
     if (!editingCourse) return;
 
-    setCourses(prev => prev.map(course => 
-      course.id === editingCourse.id 
-        ? {
-            ...course,
-            title: formData.title,
-            description: formData.description,
-            subject: formData.subject,
-            difficulty: formData.difficulty,
-            tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-          }
-        : course
-    ));
+    const updateData = {
+      title: formData.title,
+      description: formData.description,
+      subject: formData.subject,
+      difficulty: formData.difficulty,
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+    };
 
-    setEditingCourse(null);
-    setFormData({ title: '', description: '', subject: 'math', difficulty: 'beginner', tags: '' });
+    try {
+      const response = await fetch(`http://localhost:3001/api/courses/${editingCourse.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (response.ok) {
+        const updatedCourse = await response.json();
+        setCourses(prev => prev.map(course => 
+          course.id === editingCourse.id 
+            ? { ...updatedCourse, created: new Date(updatedCourse.created) }
+            : course
+        ));
+        setEditingCourse(null);
+        setFormData({ title: '', description: '', subject: 'math', difficulty: 'beginner', tags: '' });
+      } else {
+        console.error('Failed to update course:', response.status);
+      }
+    } catch (error) {
+      console.error('Error updating course:', error);
+    }
   };
 
-  const handleDeleteCourse = (id: string) => {
-    setCourses(prev => prev.filter(course => course.id !== id));
-    if (selectedCourse?.id === id) {
-      setSelectedCourse(null);
+  const handleDeleteCourse = async (id: string) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/courses/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCourses(prev => prev.filter(course => course.id !== id));
+        if (selectedCourse?.id === id) {
+          setSelectedCourse(null);
+        }
+      } else {
+        console.error('Failed to delete course:', response.status);
+      }
+    } catch (error) {
+      console.error('Error deleting course:', error);
     }
   };
 
@@ -168,12 +263,32 @@ export const CourseBuilder: React.FC = () => {
     });
   };
 
-  const toggleShareCourse = (courseId: string) => {
-    setCourses(prev => prev.map(course => 
-      course.id === courseId 
-        ? { ...course, isShared: !course.isShared }
-        : course
-    ));
+  const toggleShareCourse = async (courseId: string) => {
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/courses/${courseId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isShared: !course.isShared }),
+      });
+
+      if (response.ok) {
+        const updatedCourse = await response.json();
+        setCourses(prev => prev.map(c => 
+          c.id === courseId 
+            ? { ...updatedCourse, created: new Date(updatedCourse.created) }
+            : c
+        ));
+      } else {
+        console.error('Failed to toggle course sharing:', response.status);
+      }
+    } catch (error) {
+      console.error('Error toggling course sharing:', error);
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -446,10 +561,14 @@ export const CourseBuilder: React.FC = () => {
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                onClick={() => {
-                  localStorage.removeItem('courses');
+                onClick={async () => {
+                  // Clear all courses from backend first
+                  const currentCourses = await fetch('http://localhost:3001/api/courses').then(r => r.json()).catch(() => []);
+                  for (const course of currentCourses) {
+                    await fetch(`http://localhost:3001/api/courses/${course.id}`, { method: 'DELETE' });
+                  }
                   setCourses([]);
-                  loadSampleCourses();
+                  await loadSampleCourses();
                 }} 
                 className="focus-ring"
               >
@@ -530,11 +649,15 @@ export const CourseBuilder: React.FC = () => {
               </p>
               <Button 
                 variant="outline" 
-                onClick={() => {
+                onClick={async () => {
                   console.log('Debug - Selected course:', selectedCourse);
-                  localStorage.removeItem('courses');
+                  // Clear all courses from backend first
+                  const currentCourses = await fetch('http://localhost:3001/api/courses').then(r => r.json()).catch(() => []);
+                  for (const course of currentCourses) {
+                    await fetch(`http://localhost:3001/api/courses/${course.id}`, { method: 'DELETE' });
+                  }
                   setCourses([]);
-                  loadSampleCourses();
+                  await loadSampleCourses();
                 }} 
                 className="mt-4"
               >
@@ -567,10 +690,14 @@ export const CourseBuilder: React.FC = () => {
         <div className="flex gap-2">
           <Button 
             variant="outline" 
-            onClick={() => {
-              localStorage.removeItem('courses');
+            onClick={async () => {
+              // Clear all courses from backend first
+              const currentCourses = await fetch('http://localhost:3001/api/courses').then(r => r.json()).catch(() => []);
+              for (const course of currentCourses) {
+                await fetch(`http://localhost:3001/api/courses/${course.id}`, { method: 'DELETE' });
+              }
               setCourses([]);
-              loadSampleCourses();
+              await loadSampleCourses();
             }} 
             className="focus-ring"
           >

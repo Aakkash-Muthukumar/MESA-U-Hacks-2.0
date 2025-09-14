@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Target, Zap, Trophy, Play, Plus, TrendingUp, Calendar, Star, ChevronRight } from 'lucide-react';
+import { BookOpen, Target, Zap, Trophy, Play, Plus, TrendingUp, Calendar, Star, ChevronRight, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -154,7 +154,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           Quick Access
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group" onClick={() => onNavigate('flashcards')}>
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
@@ -199,6 +199,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               </div>
               <Button variant="outline" className="mt-4 group-hover:bg-primary group-hover:text-primary-foreground">
                 Get Started
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group" onClick={() => onNavigate('pomodoro')}>
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-red-200 transition-colors">
+                <Clock className="h-8 w-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Pomodoro Timer</h3>
+              <p className="text-muted-foreground mb-4">Focus with timed sessions</p>
+              <div className="text-sm text-muted-foreground">
+                Boost your productivity
+              </div>
+              <Button variant="outline" className="mt-4 group-hover:bg-primary group-hover:text-primary-foreground">
+                Start Timer
               </Button>
             </CardContent>
           </Card>

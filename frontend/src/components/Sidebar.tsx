@@ -15,8 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
 interface SidebarProps {
-  currentView: 'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems';
-  onViewChange: (view: 'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems') => void;
+  currentView: 'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems' | 'pomodoro';
+  onViewChange: (view: 'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems' | 'pomodoro') => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
@@ -114,6 +114,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
             <Target className="h-4 w-4" />
             Boss Problems
           </Button>
+          
+          <Button
+            variant={currentView === 'pomodoro' ? "default" : "ghost"}
+            className="w-full justify-start gap-3 h-12 focus-ring"
+            onClick={() => onViewChange('pomodoro')}
+          >
+            <Clock className="h-4 w-4" />
+            Pomodoro Timer
+          </Button>
         </div>
       </section>
 
@@ -145,32 +154,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
         </>
       )}
 
-      <Separator />
 
-      {/* Quick Actions */}
-      <section aria-labelledby="actions-heading">
-        <h3 id="actions-heading" className="text-sm font-medium mb-3 text-muted-foreground">
-          Quick Actions
-        </h3>
-        <div className="space-y-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start focus-ring"
-          >
-            <Clock className="h-4 w-4 mr-2" />
-            Start Pomodoro
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start focus-ring"
-          >
-            <Trophy className="h-4 w-4 mr-2" />
-            Daily Challenge
-          </Button>
-        </div>
-      </section>
     </div>
   );
 };

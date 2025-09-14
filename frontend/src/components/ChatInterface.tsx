@@ -25,7 +25,7 @@ const initialMessages: Message[] = [
   {
     id: '1',
     type: 'assistant',
-    content: "🌟 Welcome to your STEM Tutor! I'm here to help you master mathematics, coding, physics, biology, chemistry, and engineering. What would you like to explore today?",
+    content: "🌟 Welcome to your STEM Forge! I'm here to help you master mathematics, coding, physics, biology, chemistry, and engineering. What would you like to explore today?",
     timestamp: new Date(),
     subject: 'welcome'
   },
@@ -71,7 +71,7 @@ export const ChatInterface: React.FC = () => {
       try {
         await chatAPI.create({
           id: currentChatId,
-          name: 'STEM Tutor Chat',
+          name: 'STEM Forge Chat',
           messages: []
         });
       } catch (createError) {

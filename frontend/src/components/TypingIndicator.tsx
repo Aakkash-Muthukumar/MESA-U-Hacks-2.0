@@ -12,7 +12,7 @@ export const TypingIndicator: React.FC = () => {
       {/* Typing Animation */}
       <div className="message-assistant max-w-[200px]" role="status" aria-live="polite">
         <div className="flex items-center gap-1">
-          <span className="text-sm text-muted-foreground">STEM Tutor is thinking</span>
+          <span className="text-sm text-muted-foreground">STEM Forge is thinking</span>
           <div className="flex gap-1 ml-2">
             <div 
               className="w-2 h-2 bg-primary rounded-full animate-typing-dots"

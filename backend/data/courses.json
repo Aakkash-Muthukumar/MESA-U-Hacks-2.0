@@ -1,6 +1,6 @@
 [
   {
-    "id": "islam-course-001",
+    "id": "25fb9351-9578-4cee-8afd-436c46c9db87",
     "title": "Islam",
     "description": "Five pillars of Islam",
     "subject": "religion",
@@ -169,11 +169,201 @@
         }
       }
     ],
-    "tags": ["religion", "history", "culture", "philosophy", "interfaith"],
-    "created": "2024-01-15T10:00:00.000Z",
+    "tags": [
+      "religion",
+      "history",
+      "culture",
+      "philosophy",
+      "interfaith"
+    ],
+    "created": "2025-09-14T16:55:35.424Z",
+    "lastAccessed": "2025-09-14T16:55:35.424Z",
     "progress": 0,
     "isShared": false,
     "author": "STEM Forge AI",
     "totalTime": 135
+  },
+  {
+    "id": "chemistry-course-001",
+    "title": "General Chemistry",
+    "description": "Fundamentals of chemistry including atomic structure, chemical bonding, and reactions",
+    "subject": "chemistry",
+    "difficulty": "beginner",
+    "modules": [
+      {
+        "id": "module-1-atoms",
+        "title": "Atomic Structure and Periodic Table",
+        "description": "Explore the fundamental building blocks of matter, atomic structure, and the organization of elements in the periodic table.",
+        "type": "lesson",
+        "completed": false,
+        "estimatedTime": 50,
+        "content": {
+          "objectives": [
+            "Understand the structure of atoms and subatomic particles",
+            "Learn about electron configuration and orbital theory",
+            "Master the periodic table organization and trends",
+            "Explore atomic properties and their periodic variations"
+          ],
+          "introduction": "Chemistry begins with understanding atoms - the fundamental building blocks of all matter. From the smallest hydrogen atom to the largest synthetic elements, atomic structure governs chemical behavior and the formation of compounds.",
+          "sections": [
+            {
+              "title": "Part 1: Subatomic Particles and Atomic Models (25%)",
+              "content": "**Atoms** consist of three fundamental particles: protons (positive, in nucleus), neutrons (neutral, in nucleus), and electrons (negative, in electron cloud). Historical models evolved from Dalton's indivisible spheres to the modern quantum model with probability clouds and wave-particle duality."
+            },
+            {
+              "title": "Part 2: Electron Configuration and Orbitals (50%)",
+              "content": "Electrons occupy orbitals defined by quantum numbers. The aufbau principle, Pauli exclusion principle, and Hund's rule govern electron arrangement. Orbital types include s (spherical), p (dumbbell), d (complex), and f (very complex) shapes."
+            },
+            {
+              "title": "Part 3: The Periodic Table Organization (75%)",
+              "content": "Elements are organized by atomic number in periods (rows) and groups (columns). Major groups include alkali metals (Group 1), halogens (Group 17), and noble gases (Group 18). Periodic trends include atomic radius, ionization energy, and electronegativity."
+            },
+            {
+              "title": "Part 4: Isotopes and Atomic Mass (100%)",
+              "content": "Isotopes are atoms with the same number of protons but different neutrons. Average atomic mass is calculated from isotopic abundances. Applications include radioactive dating, medical imaging, and nuclear energy."
+            }
+          ],
+          "summary": "This module covered atomic structure fundamentals, from subatomic particles to periodic trends, providing the foundation for understanding chemical behavior.",
+          "nextPreview": "Next, we'll explore how atoms combine through chemical bonding to form compounds.",
+          "exercises": [
+            {
+              "question": "What is the electron configuration of sulfur (atomic number 16)?",
+              "answer": "1s² 2s² 2p⁶ 3s² 3p⁴ or [Ne] 3s² 3p⁴",
+              "explanation": "Sulfur has 16 electrons that fill orbitals according to the aufbau principle."
+            },
+            {
+              "question": "Which element has the highest electronegativity?",
+              "answer": "Fluorine (F) with an electronegativity of 4.0",
+              "explanation": "Fluorine's small size and high nuclear charge make it most electronegative."
+            },
+            {
+              "question": "Calculate the number of neutrons in Uranium-238.",
+              "answer": "146 neutrons (238 - 92 = 146)",
+              "explanation": "Mass number minus atomic number equals neutrons."
+            }
+          ]
+        }
+      },
+      {
+        "id": "module-2-bonding",
+        "title": "Chemical Bonding and Molecular Structure",
+        "description": "Understand how atoms combine to form compounds through ionic, covalent, and metallic bonding, and explore molecular geometry.",
+        "type": "lesson",
+        "completed": false,
+        "estimatedTime": 55,
+        "content": {
+          "objectives": [
+            "Distinguish between ionic, covalent, and metallic bonding",
+            "Predict molecular geometry using VSEPR theory",
+            "Understand intermolecular forces and their effects",
+            "Apply bonding concepts to explain material properties"
+          ],
+          "introduction": "Chemical bonding explains how atoms combine to form compounds. Understanding bonding helps predict properties and design new materials.",
+          "sections": [
+            {
+              "title": "Part 1: Ionic Bonding and Compounds (25%)",
+              "content": "Ionic bonding occurs through electron transfer between metals and nonmetals, forming cations and anions. Properties include high melting points, brittleness, and electrical conductivity when molten. Examples include NaCl, MgO, and CaF₂."
+            },
+            {
+              "title": "Part 2: Covalent Bonding and Lewis Structures (50%)",
+              "content": "Covalent bonding involves electron sharing between nonmetals. Lewis structures show bonding patterns, with single, double, and triple bonds. Formal charge and resonance help determine the best structures."
+            },
+            {
+              "title": "Part 3: Molecular Geometry and VSEPR Theory (75%)",
+              "content": "VSEPR theory predicts molecular shapes based on electron pair repulsion. Common geometries include linear, trigonal planar, tetrahedral, and octahedral. Molecular polarity depends on bond polarity and geometry."
+            },
+            {
+              "title": "Part 4: Intermolecular Forces and Properties (100%)",
+              "content": "Intermolecular forces include London dispersion, dipole-dipole, and hydrogen bonding. These forces affect boiling points, solubility, and other physical properties. Biological systems rely heavily on hydrogen bonding."
+            }
+          ],
+          "summary": "This module explored chemical bonding types and their effects on molecular structure and material properties.",
+          "nextPreview": "Finally, we'll examine chemical reactions, stoichiometry, and energy changes.",
+          "exercises": [
+            {
+              "question": "What is the molecular geometry of ammonia (NH₃)?",
+              "answer": "Trigonal pyramidal with bond angles of approximately 107°",
+              "explanation": "NH₃ has tetrahedral electron geometry but trigonal pyramidal molecular geometry due to one lone pair."
+            },
+            {
+              "question": "Why does water have a higher boiling point than methane?",
+              "answer": "Water exhibits hydrogen bonding, which is stronger than London forces in methane",
+              "explanation": "Hydrogen bonds require more energy to break than dispersion forces."
+            },
+            {
+              "question": "Predict the formula for aluminum sulfide.",
+              "answer": "Al₂S₃",
+              "explanation": "Al³⁺ and S²⁻ combine in a 2:3 ratio to balance charges."
+            }
+          ]
+        }
+      },
+      {
+        "id": "module-3-reactions",
+        "title": "Chemical Reactions and Stoichiometry",
+        "description": "Master chemical equations, reaction types, stoichiometric calculations, and energy changes in reactions.",
+        "type": "lesson",
+        "completed": false,
+        "estimatedTime": 45,
+        "content": {
+          "objectives": [
+            "Balance chemical equations and understand stoichiometry",
+            "Classify different types of chemical reactions",
+            "Perform quantitative calculations with moles and mass",
+            "Understand energy changes in chemical reactions"
+          ],
+          "introduction": "Chemical reactions transform reactants into products. Understanding stoichiometry allows us to predict quantities and optimize processes.",
+          "sections": [
+            {
+              "title": "Part 1: Chemical Equations and Balancing (25%)",
+              "content": "Chemical equations represent reactions using symbols and formulas. The law of conservation of mass requires equal numbers of each atom type on both sides. Balancing involves adjusting coefficients systematically."
+            },
+            {
+              "title": "Part 2: Types of Chemical Reactions (50%)",
+              "content": "Major reaction types include synthesis (A + B → AB), decomposition (AB → A + B), single displacement (A + BC → AC + B), double displacement (AB + CD → AD + CB), and combustion reactions."
+            },
+            {
+              "title": "Part 3: Stoichiometry and Mole Calculations (75%)",
+              "content": "Stoichiometry uses mole ratios from balanced equations to calculate quantities. The mole concept (6.022 × 10²³ particles) connects atomic scale to laboratory scale. Limiting reactants determine product amounts."
+            },
+            {
+              "title": "Part 4: Thermochemistry and Energy Changes (100%)",
+              "content": "Chemical reactions involve energy changes measured as enthalpy (ΔH). Exothermic reactions release energy (ΔH < 0), while endothermic reactions absorb energy (ΔH > 0). Calorimetry measures heat changes."
+            }
+          ],
+          "summary": "This module covered chemical reactions, from balancing equations to energy changes, providing tools for quantitative chemistry.",
+          "nextPreview": "Congratulations on completing General Chemistry! Consider exploring organic chemistry, physical chemistry, or analytical chemistry next.",
+          "exercises": [
+            {
+              "question": "Balance: Al + CuSO₄ → Al₂(SO₄)₃ + Cu",
+              "answer": "2Al + 3CuSO₄ → Al₂(SO₄)₃ + 3Cu",
+              "explanation": "Balance aluminum first, then copper, then verify sulfate groups."
+            },
+            {
+              "question": "How many grams of CO₂ from 16.0 g CH₄ combustion?",
+              "answer": "44.0 g CO₂",
+              "explanation": "16.0 g CH₄ = 1.00 mol, which produces 1.00 mol CO₂ = 44.0 g."
+            },
+            {
+              "question": "Is water formation exothermic or endothermic?",
+              "answer": "Exothermic (ΔH = -285.8 kJ/mol)",
+              "explanation": "Water formation releases energy because strong O-H bonds form."
+            }
+          ]
+        }
+      }
+    ],
+    "tags": [
+      "chemistry",
+      "science",
+      "atoms",
+      "bonding",
+      "reactions"
+    ],
+    "created": "2024-01-15T10:00:00.000Z",
+    "progress": 0,
+    "isShared": false,
+    "author": "STEM Forge AI",
+    "totalTime": 150
   }
 ]

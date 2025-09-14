@@ -1,7 +1,7 @@
 {
   "name": "stem-tutor-backend",
   "version": "1.0.0",
-  "description": "Local backend for STEM Tutor - handles data storage and management",
+  "description": "Local backend for STEM Forge - handles data storage and management",
   "main": "server.js",
   "type": "module",
   "scripts": {

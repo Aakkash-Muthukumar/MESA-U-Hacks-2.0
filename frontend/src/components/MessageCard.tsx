@@ -90,7 +90,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message }) => {
         {/* Message Header */}
         <div className={`flex items-center gap-2 mb-1 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
           <span className="text-sm font-medium">
-            {isUser ? 'You' : 'STEM Tutor'}
+            {isUser ? 'You' : 'STEM Forge'}
           </span>
           
           {message.subject && (
@@ -115,7 +115,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message }) => {
               : 'message-assistant'
           } max-w-full`}
           role="article"
-          aria-label={`Message from ${isUser ? 'user' : 'STEM Tutor'}`}
+          aria-label={`Message from ${isUser ? 'user' : 'STEM Forge'}`}
         >
           <div className="prose prose-sm max-w-none dark:prose-invert">
             <div 

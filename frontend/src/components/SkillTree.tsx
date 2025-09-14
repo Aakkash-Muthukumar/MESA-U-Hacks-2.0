@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Lock, CheckCircle, Zap, Trophy, Atom, Calculator, Code, Microscope, Beaker, Plus, TreePine } from 'lucide-react';
+import { Star, Lock, CheckCircle, Zap, Trophy, Atom, Calculator, Code, Microscope, Beaker, Plus, TreePine, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 interface SkillNode {
   id: string;
   name: string;
-  subject: 'math' | 'physics' | 'chemistry' | 'biology' | 'coding' | 'engineering';
+  subject: 'math' | 'physics' | 'chemistry' | 'biology' | 'coding' | 'engineering' | 'religion';
   level: number;
   prerequisiteIds: string[];
   isUnlocked: boolean;
@@ -29,7 +29,8 @@ const SUBJECT_ICONS = {
   chemistry: Beaker,
   biology: Microscope,
   coding: Code,
-  engineering: Trophy
+  engineering: Trophy,
+  religion: BookOpen
 };
 
 const SUBJECT_COLORS = {
@@ -38,18 +39,98 @@ const SUBJECT_COLORS = {
   chemistry: 'hsl(140 60% 50%)',
   biology: 'hsl(120 50% 50%)',
   coding: 'hsl(280 60% 60%)',
-  engineering: 'hsl(15 90% 60%)'
+  engineering: 'hsl(15 90% 60%)',
+  religion: 'hsl(260 60% 60%)'
 };
+
+const DEFAULT_SKILLS: SkillNode[] = [
+  {
+    id: 'chemistry-atoms',
+    name: 'Atomic Structure',
+    subject: 'chemistry',
+    level: 1,
+    prerequisiteIds: [],
+    isUnlocked: true,
+    isCompleted: true,
+    progress: 100,
+    xpReward: 100,
+    description: 'Explore subatomic particles, electron configuration, and periodic table organization'
+  },
+  {
+    id: 'chemistry-bonding',
+    name: 'Chemical Bonding',
+    subject: 'chemistry',
+    level: 1,
+    prerequisiteIds: [],
+    isUnlocked: true,
+    isCompleted: true,
+    progress: 100,
+    xpReward: 120,
+    description: 'Understand ionic, covalent bonding and molecular geometry using VSEPR theory'
+  },
+  {
+    id: 'chemistry-reactions',
+    name: 'Chemical Reactions',
+    subject: 'chemistry',
+    level: 1,
+    prerequisiteIds: [],
+    isUnlocked: true,
+    isCompleted: true,
+    progress: 100,
+    xpReward: 90,
+    description: 'Master chemical equations, stoichiometry, and thermochemistry principles'
+  },
+  {
+    id: 'islam-foundations',
+    name: 'Islamic Foundations',
+    subject: 'religion',
+    level: 1,
+    prerequisiteIds: [],
+    isUnlocked: true,
+    isCompleted: false,
+    progress: 65,
+    xpReward: 100,
+    description: 'Core beliefs including Tawhid, Five Pillars, and the role of Prophet Muhammad'
+  },
+  {
+    id: 'islam-history',
+    name: 'Islamic History',
+    subject: 'religion',
+    level: 1,
+    prerequisiteIds: [],
+    isUnlocked: true,
+    isCompleted: false,
+    progress: 30,
+    xpReward: 120,
+    description: 'Journey through Islamic civilization from early expansion to the Golden Age'
+  },
+  {
+    id: 'islam-contemporary',
+    name: 'Contemporary Islam',
+    subject: 'religion',
+    level: 1,
+    prerequisiteIds: [],
+    isUnlocked: true,
+    isCompleted: false,
+    progress: 0,
+    xpReward: 110,
+    description: 'Explore modern Islamic movements, global diversity, and contemporary challenges'
+  }
+];
 
 export const SkillTree: React.FC = () => {
   const [skillNodes, setSkillNodes] = useState<SkillNode[]>([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  // Load skill nodes from localStorage (could be moved to backend later)
+  // Load skill nodes from localStorage or use defaults
   useEffect(() => {
     const stored = localStorage.getItem('skillNodes');
     if (stored) {
       setSkillNodes(JSON.parse(stored));
+    } else {
+      // Load default skills if none exist
+      setSkillNodes(DEFAULT_SKILLS);
+      localStorage.setItem('skillNodes', JSON.stringify(DEFAULT_SKILLS));
     }
   }, []);
 
@@ -155,27 +236,21 @@ export const SkillTree: React.FC = () => {
                     return (
                       <Card 
                         key={node.id}
-                        className={`relative transition-all duration-300 hover:scale-105 ${
-                          node.isCompleted ? 'ring-2 ring-success shadow-glow' :
-                          node.isUnlocked ? 'ring-2 ring-primary shadow-cosmic hover:shadow-glow' :
+                        className={`relative transition-all duration-300 hover:scale-105 min-h-[280px] ${
+                          node.isCompleted ? 'ring-2 ring-green-400 shadow-lg' :
+                          node.isUnlocked ? 'ring-2 ring-blue-400 shadow-lg hover:shadow-xl' :
                           'opacity-60 grayscale'
                         }`}
                         style={{
-                          background: node.isUnlocked ? 
-                            `linear-gradient(135deg, hsl(var(--card)) 0%, ${SUBJECT_COLORS[node.subject]}10 100%)` :
+                          background: node.isCompleted ? 
+                            `linear-gradient(135deg, ${SUBJECT_COLORS[node.subject]}15 0%, ${SUBJECT_COLORS[node.subject]}05 100%)` :
+                            node.isUnlocked ?
+                            `linear-gradient(135deg, ${SUBJECT_COLORS[node.subject]}10 0%, hsl(var(--card)) 100%)` :
                             undefined
                         }}
                       >
-                        {/* Glowing effect for completed nodes */}
-                        {node.isCompleted && (
-                          <div 
-                            className="absolute inset-0 rounded-lg opacity-20 animate-pulse"
-                            style={{ background: SUBJECT_COLORS[node.subject] }}
-                          />
-                        )}
-                        
-                        <CardHeader className="pb-2">
-                          <div className="flex items-center justify-between">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <SubjectIcon 
                                 className="h-5 w-5"
@@ -189,52 +264,46 @@ export const SkillTree: React.FC = () => {
                                   color: SUBJECT_COLORS[node.subject]
                                 }}
                               >
-                                {node.subject}
+                                {node.subject === 'religion' ? 'Religion' : node.subject}
                               </Badge>
                             </div>
                             <Icon className={`h-6 w-6 ${getNodeStatusColor(node)}`} />
                           </div>
                           
-                          <CardTitle className="text-lg font-semibold">
+                          <CardTitle className="text-xl font-bold mb-2">
                             {node.name}
                           </CardTitle>
                         </CardHeader>
                         
-                        <CardContent>
-                          <CardDescription className="mb-4 text-sm">
+                        <CardContent className="pt-0">
+                          <CardDescription className="mb-6 text-sm leading-relaxed">
                             {node.description}
                           </CardDescription>
                           
-                          {node.isUnlocked && !node.isCompleted && (
-                            <div className="space-y-3">
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-muted-foreground">Progress</span>
-                                <span className="font-medium">{node.progress}%</span>
+                          <div className="mt-auto space-y-4">
+                            {node.isUnlocked && !node.isCompleted && (
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-muted-foreground">Progress</span>
+                                  <span className="font-medium">{node.progress}%</span>
+                                </div>
+                                <Progress 
+                                  value={node.progress} 
+                                  className="h-2"
+                                  aria-label={`${node.name} progress: ${node.progress}%`}
+                                />
                               </div>
-                              <Progress 
-                                value={node.progress} 
-                                className="h-2"
-                                aria-label={`${node.name} progress: ${node.progress}%`}
-                              />
-                            </div>
-                          )}
-                          
-                          <div className="flex items-center justify-between mt-4">
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Zap className="h-4 w-4" />
-                              <span>{node.xpReward} XP</span>
-                            </div>
-                            
-                            {node.isUnlocked && (
-                              <Button 
-                                size="sm" 
-                                variant={node.isCompleted ? "secondary" : "default"}
-                                disabled={node.isCompleted}
-                                className="focus-ring"
-                              >
-                                {node.isCompleted ? 'Completed' : 'Continue'}
-                              </Button>
                             )}
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1 text-sm font-medium">
+                                <Zap className="h-4 w-4" style={{ color: SUBJECT_COLORS[node.subject] }} />
+                                <span>{node.xpReward} XP</span>
+                                <span className="text-muted-foreground ml-2">
+                                  {node.isCompleted ? 'Completed' : node.isUnlocked ? 'Available' : 'Locked'}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -286,6 +355,7 @@ export const SkillTree: React.FC = () => {
                     <SelectItem value="biology">Biology</SelectItem>
                     <SelectItem value="coding">Programming</SelectItem>
                     <SelectItem value="engineering">Engineering</SelectItem>
+                    <SelectItem value="religion">Religion</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

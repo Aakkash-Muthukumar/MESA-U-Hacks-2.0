@@ -1,6 +1,6 @@
 [
   {
-    "id": "islam-course-001",
+    "id": "25fb9351-9578-4cee-8afd-436c46c9db87",
     "title": "Islam",
     "description": "Five pillars of Islam",
     "subject": "religion",
@@ -169,11 +169,18 @@
         }
       }
     ],
-    "tags": ["religion", "history", "culture", "philosophy", "interfaith"],
-    "created": "2024-01-15T10:00:00.000Z",
+    "tags": [
+      "religion",
+      "history",
+      "culture",
+      "philosophy",
+      "interfaith"
+    ],
+    "created": "2025-09-14T16:55:35.424Z",
+    "lastAccessed": "2025-09-14T16:55:35.424Z",
     "progress": 0,
     "isShared": false,
-    "author": "STEM Forge AI",
+    "author": "STEM Tutor AI",
     "totalTime": 135
   }
 ]

@@ -166,6 +166,18 @@ if [ ! -d "backend/data" ]; then
     mkdir -p backend/data
     echo '[]' > backend/data/flashcards.json
     echo '[]' > backend/data/subjects.json
+    # Copy sample courses (Islam course with 3 modules)
+    if [ -f "frontend/public/sample-courses.json" ]; then
+        cp frontend/public/sample-courses.json backend/data/courses.json
+        echo "✅ Sample Islam course with 3 modules installed"
+    else
+        echo '[]' > backend/data/courses.json
+    fi
+    # Create boss challenges file if it doesn't exist
+    if [ ! -f "backend/data/boss-challenges.json" ]; then
+        echo '[]' > backend/data/boss-challenges.json
+        echo "✅ Boss challenges file created"
+    fi
     echo '{"totalXP":0,"level":1,"streak":0,"lastActivity":null,"completedSkills":[],"achievements":[]}' > backend/data/progress.json
 fi
 

@@ -15,6 +15,7 @@ import { KnowledgeKart } from '@/components/games/KnowledgeKart';
 import { STEMTower } from '@/components/games/STEMTower';
 import { DailyQuest } from '@/components/DailyQuest';
 import { BossProblems } from '@/components/BossProblems';
+import { PomodoroTimer } from '@/components/PomodoroTimer';
 
 interface STEMTutorLayoutProps {
   children?: React.ReactNode;
@@ -24,7 +25,7 @@ export const STEMTutorLayout: React.FC<STEMTutorLayoutProps> = ({ children }) =>
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'chat' | 'skill-tree' | 'flashcards' | 'courses' | 'games' | 'daily-quest' | 'boss-problems' | 'pomodoro'>('dashboard');
   const { theme } = useTheme();
 
   return (
@@ -61,7 +62,7 @@ export const STEMTutorLayout: React.FC<STEMTutorLayoutProps> = ({ children }) =>
               <Zap className="h-4 w-4 text-white" />
             </div>
             <h1 className="text-xl font-semibold bg-gradient-cosmic bg-clip-text text-transparent">
-              STEM Tutor
+              STEM Forge
             </h1>
           </div>
         </div>
@@ -118,6 +119,7 @@ export const STEMTutorLayout: React.FC<STEMTutorLayoutProps> = ({ children }) =>
             {currentView === 'games' && <KnowledgeKart />}
             {currentView === 'daily-quest' && <DailyQuest />}
             {currentView === 'boss-problems' && <BossProblems />}
+            {currentView === 'pomodoro' && <PomodoroTimer />}
           </div>
         </main>
       </div>

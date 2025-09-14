@@ -9,7 +9,7 @@ from datetime import datetime
 import ollama_service
 import chat_manager
 
-app = FastAPI(title="STEM Tutor Python Backend", version="1.0.0")
+app = FastAPI(title="STEM Forge Python Backend", version="1.0.0")
 
 # Add CORS middleware
 app.add_middleware(
